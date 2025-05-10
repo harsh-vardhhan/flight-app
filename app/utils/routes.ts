@@ -1,0 +1,86 @@
+export const routes = [
+  {
+    origin: "New Delhi",
+    destination: "Hanoi",
+    originCountry: "India",
+    destinationCountry: "Vietnam",
+  },
+  {
+    origin: "Hanoi",
+    destination: "New Delhi",
+    originCountry: "Vietnam",
+    destinationCountry: "India",
+  },
+  {
+    origin: "New Delhi",
+    destination: "Ho Chi Minh City",
+    originCountry: "India",
+    destinationCountry: "Vietnam",
+  },
+  {
+    origin: "Ho Chi Minh City",
+    destination: "New Delhi",
+    originCountry: "Vietnam",
+    destinationCountry: "India",
+  },
+  {
+    origin: "Mumbai",
+    destination: "Hanoi",
+    originCountry: "India",
+    destinationCountry: "Vietnam",
+  },
+  {
+    origin: "Hanoi",
+    destination: "Mumbai",
+    originCountry: "Vietnam",
+    destinationCountry: "India",
+  },
+  {
+    origin: "Mumbai",
+    destination: "Ho Chi Minh City",
+    originCountry: "India",
+    destinationCountry: "Vietnam",
+  },
+  {
+    origin: "Ho Chi Minh City",
+    destination: "Mumbai",
+    originCountry: "Vietnam",
+    destinationCountry: "India",
+  },
+  {
+    origin: "Ahmedabad",
+    destination: "Hanoi",
+    originCountry: "India",
+    destinationCountry: "Vietnam",
+  },
+  {
+    origin: "Hanoi",
+    destination: "Ahmedabad",
+    originCountry: "Vietnam",
+    destinationCountry: "India",
+  },
+  {
+    origin: "Ahmedabad",
+    destination: "Ho Chi Minh City",
+    originCountry: "India",
+    destinationCountry: "Vietnam",
+  },
+  {
+    origin: "Ho Chi Minh City",
+    destination: "Ahmedabad",
+    originCountry: "Vietnam",
+    destinationCountry: "India",
+  },
+  {
+    origin: "Ahmedabad",
+    destination: "Da Nang",
+    originCountry: "India",
+    destinationCountry: "Vietnam",
+  },
+  {
+    origin: "Da Nang",
+    destination: "Ahmedabad",
+    originCountry: "Vietnam",
+    destinationCountry: "India",
+  },
+];
