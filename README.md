@@ -4,7 +4,6 @@
 |----------------------------------------- |-----------|
 | Platform               | Expo      |
 | Workflow              | Managed    |
-| API              | REST    |
 
 # Backend API
 
