@@ -126,7 +126,6 @@ const FlightCard: React.FC<FlightCardProps> = ({
     return isDarkMode ? "rgba(52, 152, 219, 0.2)" : "rgba(52, 152, 219, 0.1)";
   };
 
-  console.log(item.origin_country);
   const isOutbound = item.origin_country === "India";
   const flightDirection = isOutbound ? "Outbound" : "Return";
 
