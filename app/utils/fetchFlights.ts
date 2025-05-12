@@ -8,10 +8,10 @@ export interface Flight {
   airline: string;
   time: string;
   duration: string;
-  flightType: string;
+  flight_type: string;
   price_inr: number;
-  originCountry: string;
-  destinationCountry: string;
+  origin_country: string;
+  destination_country: string;
   rain_probability: number;
   free_meal?: boolean;
 }

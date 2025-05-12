@@ -1,11 +1,18 @@
-import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Linking, useColorScheme } from 'react-native';
-import RainProbabilityIndicator from './RainProbabilityIndicator';
-import { format } from 'date-fns';
-import { enUS } from 'date-fns/locale';
-import { AirlineLuggagePolicy } from './LuggagePolicyModal';
-import {formatDate} from '../app/utils/formatDate';
-import {Flight} from '../app/reducers/flightListReducer'
+import React from "react";
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  StyleSheet,
+  Linking,
+  useColorScheme,
+} from "react-native";
+import RainProbabilityIndicator from "./RainProbabilityIndicator";
+import { format } from "date-fns";
+import { enUS } from "date-fns/locale";
+import { AirlineLuggagePolicy } from "./LuggagePolicyModal";
+import { formatDate } from "../app/utils/formatDate";
+import { Flight } from "../app/reducers/flightListReducer";
 
 type LuggagePolicyDatabase = {
   [airlineName: string]: AirlineLuggagePolicy;
@@ -13,15 +20,14 @@ type LuggagePolicyDatabase = {
 
 interface FlightCardProps {
   item: Flight;
-  baggageOption: 'all' | 'free' | 'included';
+  baggageOption: "all" | "free" | "included";
   standardBaggageWeight: string;
   showButtons?: boolean;
-  onSelectFlight?: (flight: Flight, direction: 'Outbound' | 'Return') => void;
+  onSelectFlight?: (flight: Flight, direction: "Outbound" | "Return") => void;
   onLuggagePolicyPress?: (airline: string) => void;
   onRainInfoPress?: (flight: Flight) => void;
   luggagePolicies?: LuggagePolicyDatabase;
 }
-
 
 const FlightCard: React.FC<FlightCardProps> = ({
   item,
@@ -31,23 +37,27 @@ const FlightCard: React.FC<FlightCardProps> = ({
   onSelectFlight,
   onLuggagePolicyPress,
   onRainInfoPress,
-  luggagePolicies = {}
+  luggagePolicies = {},
 }) => {
   const showRainInfo = item.rain_probability > 0;
   const showMealInfo = item.free_meal === true;
   const rainInfo = Math.trunc(item.rain_probability);
 
   const colorScheme = useColorScheme();
-  const isDarkMode = colorScheme === 'dark';
+  const isDarkMode = colorScheme === "dark";
 
   const airlinePolicy = luggagePolicies[item.airline];
 
-  if (showButtons && luggagePolicies && Object.keys(luggagePolicies).length > 0) {
+  if (
+    showButtons &&
+    luggagePolicies &&
+    Object.keys(luggagePolicies).length > 0
+  ) {
     if (!airlinePolicy) {
     } else {
-      if (baggageOption === 'free' && !(airlinePolicy.checked?.free)) {
+      if (baggageOption === "free" && !airlinePolicy.checked?.free) {
       }
-      if (baggageOption === 'included' && airlinePolicy.checked?.free) {
+      if (baggageOption === "included" && airlinePolicy.checked?.free) {
       }
     }
   }
@@ -57,20 +67,23 @@ const FlightCard: React.FC<FlightCardProps> = ({
   }).toLowerCase();
 
   const calculateBaggageCost = () => {
-    if (baggageOption !== 'included' || !airlinePolicy) {
+    if (baggageOption !== "included" || !airlinePolicy) {
       return 0;
     }
 
-    if (!airlinePolicy.extraCheckedOptions || airlinePolicy.extraCheckedOptions.length === 0) {
+    if (
+      !airlinePolicy.extraCheckedOptions ||
+      airlinePolicy.extraCheckedOptions.length === 0
+    ) {
       return 0;
     }
 
-    const normalizedWeight = standardBaggageWeight.includes('kg')
+    const normalizedWeight = standardBaggageWeight.includes("kg")
       ? standardBaggageWeight
       : `${standardBaggageWeight}kg`;
 
     const selectedOption = airlinePolicy.extraCheckedOptions.find(
-      option => option.weight === normalizedWeight
+      (option) => option.weight === normalizedWeight,
     );
 
     return selectedOption ? selectedOption.beforeThreeHours : 0;
@@ -79,16 +92,18 @@ const FlightCard: React.FC<FlightCardProps> = ({
   const baggageCost = calculateBaggageCost();
   const totalPrice = item.price_inr + baggageCost;
 
-  const showBaggageCostInfo = baggageOption === 'included';
+  const showBaggageCostInfo = baggageOption === "included";
 
-  const displayWeight = standardBaggageWeight.includes('kg')
+  const displayWeight = standardBaggageWeight.includes("kg")
     ? standardBaggageWeight
     : `${standardBaggageWeight}kg`;
 
   const handleSearchPress = () => {
     const searchQuery = `flights from ${item.origin} to ${item.destination} ${searchDate} one way`;
     const googleSearchUrl = `https://www.google.com/search?q=${encodeURIComponent(searchQuery)}`;
-    Linking.openURL(googleSearchUrl).catch(err => console.error("Couldn't load page", err));
+    Linking.openURL(googleSearchUrl).catch((err) =>
+      console.error("Couldn't load page", err),
+    );
   };
 
   const handleLuggagePress = () => {
@@ -104,53 +119,56 @@ const FlightCard: React.FC<FlightCardProps> = ({
   };
 
   const getRainColor = (probability: number) => {
-    if (probability < 25) return isDarkMode ? 'rgba(46, 204, 113, 0.2)' : 'rgba(46, 204, 113, 0.1)';
-    if (probability > 50) return isDarkMode ? 'rgba(231, 76, 60, 0.2)' : 'rgba(231, 76, 60, 0.1)';
-    return isDarkMode ? 'rgba(52, 152, 219, 0.2)' : 'rgba(52, 152, 219, 0.1)';
+    if (probability < 25)
+      return isDarkMode ? "rgba(46, 204, 113, 0.2)" : "rgba(46, 204, 113, 0.1)";
+    if (probability > 50)
+      return isDarkMode ? "rgba(231, 76, 60, 0.2)" : "rgba(231, 76, 60, 0.1)";
+    return isDarkMode ? "rgba(52, 152, 219, 0.2)" : "rgba(52, 152, 219, 0.1)";
   };
 
-  const isOutbound = item.originCountry === 'India';
-  const flightDirection = isOutbound ? 'Outbound' : 'Return';
+  console.log(item.origin_country);
+  const isOutbound = item.origin_country === "India";
+  const flightDirection = isOutbound ? "Outbound" : "Return";
 
   const handleAddFlightPress = () => {
     if (onSelectFlight) {
-      onSelectFlight(item, flightDirection as 'Outbound' | 'Return');
+      onSelectFlight(item, flightDirection as "Outbound" | "Return");
     }
   };
 
   const styles = StyleSheet.create({
     card: {
-      backgroundColor: isDarkMode ? '#1C2526' : 'white',
+      backgroundColor: isDarkMode ? "#1C2526" : "white",
       borderRadius: 12,
       padding: 16,
       marginBottom: 12,
       elevation: 3,
-      shadowColor: isDarkMode ? '#000' : '#000',
+      shadowColor: isDarkMode ? "#000" : "#000",
       shadowOffset: { width: 0, height: 2 },
       shadowOpacity: isDarkMode ? 0.3 : 0.1,
       shadowRadius: 4,
       borderWidth: 1,
-      borderColor: isDarkMode ? '#2C3A3B' : '#eee',
+      borderColor: isDarkMode ? "#2C3A3B" : "#eee",
     },
     airlineContainer: {
-      flexDirection: 'row',
-      justifyContent: 'space-between',
+      flexDirection: "row",
+      justifyContent: "space-between",
       marginBottom: 12,
-      alignItems: 'center',
+      alignItems: "center",
     },
     airline: {
       fontSize: 16,
-      fontWeight: '600',
-      color: isDarkMode ? '#E0E0E0' : '#333',
+      fontWeight: "600",
+      color: isDarkMode ? "#E0E0E0" : "#333",
       flexShrink: 1,
       marginRight: 8,
     },
     rightHeaderContainer: {
-      flexDirection: 'row',
-      alignItems: 'center',
+      flexDirection: "row",
+      alignItems: "center",
     },
     directionBadge: {
-      backgroundColor: isDarkMode ? '#2A3B5E' : '#eef',
+      backgroundColor: isDarkMode ? "#2A3B5E" : "#eef",
       paddingHorizontal: 8,
       paddingVertical: 3,
       borderRadius: 10,
@@ -158,63 +176,63 @@ const FlightCard: React.FC<FlightCardProps> = ({
     },
     directionText: {
       fontSize: 11,
-      color: isDarkMode ? '#4A90E2' : '#0066cc',
-      fontWeight: '600',
+      color: isDarkMode ? "#4A90E2" : "#0066cc",
+      fontWeight: "600",
     },
-    flightType: {
+    flight_type: {
       fontSize: 13,
-      color: isDarkMode ? '#A0A0A0' : '#666',
-      fontStyle: 'italic',
+      color: isDarkMode ? "#A0A0A0" : "#666",
+      fontStyle: "italic",
     },
     routeContainer: {
-      flexDirection: 'row',
-      justifyContent: 'space-between',
-      alignItems: 'center',
+      flexDirection: "row",
+      justifyContent: "space-between",
+      alignItems: "center",
       marginBottom: 16,
     },
     locationInfo: {
-      alignItems: 'center',
-      width: '28%',
+      alignItems: "center",
+      width: "28%",
     },
     locationCode: {
       fontSize: 18,
-      fontWeight: 'bold',
-      color: isDarkMode ? '#FFFFFF' : '#111',
+      fontWeight: "bold",
+      color: isDarkMode ? "#FFFFFF" : "#111",
       marginBottom: 2,
     },
     country: {
       fontSize: 11,
-      color: isDarkMode ? '#A0A0A0' : '#777',
-      textAlign: 'center',
+      color: isDarkMode ? "#A0A0A0" : "#777",
+      textAlign: "center",
     },
     flightPath: {
-      flexDirection: 'row',
-      alignItems: 'center',
-      width: '44%',
-      justifyContent: 'center',
+      flexDirection: "row",
+      alignItems: "center",
+      width: "44%",
+      justifyContent: "center",
     },
     line: {
       height: 1.5,
-      backgroundColor: isDarkMode ? '#4A5657' : '#ddd',
+      backgroundColor: isDarkMode ? "#4A5657" : "#ddd",
       flex: 1,
     },
     circle: {
       width: 7,
       height: 7,
       borderRadius: 4,
-      backgroundColor: isDarkMode ? '#4A90E2' : '#0066cc',
+      backgroundColor: isDarkMode ? "#4A90E2" : "#0066cc",
       marginHorizontal: 3,
     },
     duration: {
       fontSize: 12,
-      color: isDarkMode ? '#B0B0B0' : '#555',
-      fontWeight: '500',
+      color: isDarkMode ? "#B0B0B0" : "#555",
+      fontWeight: "500",
       marginHorizontal: 5,
     },
     detailsContainer: {
-      flexDirection: 'row',
-      justifyContent: 'space-between',
-      alignItems: 'flex-start',
+      flexDirection: "row",
+      justifyContent: "space-between",
+      alignItems: "flex-start",
     },
     dateTimeContainer: {
       flex: 1,
@@ -222,24 +240,24 @@ const FlightCard: React.FC<FlightCardProps> = ({
     },
     date: {
       fontSize: 14,
-      color: isDarkMode ? '#E0E0E0' : '#333',
-      fontWeight: '500',
+      color: isDarkMode ? "#E0E0E0" : "#333",
+      fontWeight: "500",
       marginBottom: 2,
     },
     time: {
       fontSize: 13,
-      color: isDarkMode ? '#B0B0B0' : '#555',
+      color: isDarkMode ? "#B0B0B0" : "#555",
       marginBottom: 8,
     },
     mealContainer: {
-      flexDirection: 'row',
-      alignItems: 'center',
+      flexDirection: "row",
+      alignItems: "center",
       marginTop: 4,
-      backgroundColor: isDarkMode ? '#2A4D3E' : '#e6f7e6',
+      backgroundColor: isDarkMode ? "#2A4D3E" : "#e6f7e6",
       paddingHorizontal: 6,
       paddingVertical: 2,
       borderRadius: 4,
-      alignSelf: 'flex-start',
+      alignSelf: "flex-start",
     },
     mealIcon: {
       fontSize: 12,
@@ -247,49 +265,49 @@ const FlightCard: React.FC<FlightCardProps> = ({
     },
     mealText: {
       fontSize: 11,
-      color: isDarkMode ? '#66BB6A' : '#1e7e34',
-      fontWeight: '500',
+      color: isDarkMode ? "#66BB6A" : "#1e7e34",
+      fontWeight: "500",
     },
     priceWeatherContainer: {
-      flexDirection: 'row',
-      alignItems: 'flex-start',
+      flexDirection: "row",
+      alignItems: "flex-start",
     },
     priceContainer: {
-      alignItems: 'flex-end',
+      alignItems: "flex-end",
       marginRight: 10,
     },
     priceLabel: {
       fontSize: 12,
-      color: isDarkMode ? '#A0A0A0' : '#666',
+      color: isDarkMode ? "#A0A0A0" : "#666",
       marginBottom: 0,
     },
     price: {
       fontSize: 19,
-      fontWeight: 'bold',
-      color: isDarkMode ? '#4A90E2' : '#0066cc',
+      fontWeight: "bold",
+      color: isDarkMode ? "#4A90E2" : "#0066cc",
     },
     baggageCost: {
       fontSize: 12,
-      color: isDarkMode ? '#A0A0A0' : '#777',
+      color: isDarkMode ? "#A0A0A0" : "#777",
       marginTop: 1,
-      textAlign: 'right',
+      textAlign: "right",
     },
     totalPrice: {
       fontSize: 12,
-      color: isDarkMode ? '#B0B0B0' : '#555',
-      fontWeight: '600',
+      color: isDarkMode ? "#B0B0B0" : "#555",
+      fontWeight: "600",
       marginTop: 2,
-      textAlign: 'right',
+      textAlign: "right",
     },
     divider: {
       height: 1,
-      backgroundColor: isDarkMode ? '#2C3A3B' : '#eee',
+      backgroundColor: isDarkMode ? "#2C3A3B" : "#eee",
       marginTop: 16,
       marginBottom: 12,
     },
     buttonContainer: {
-      flexDirection: 'row',
-      justifyContent: 'space-between',
+      flexDirection: "row",
+      justifyContent: "space-between",
       marginHorizontal: -4,
     },
     button: {
@@ -297,53 +315,61 @@ const FlightCard: React.FC<FlightCardProps> = ({
       paddingHorizontal: 10,
       borderRadius: 6,
       borderWidth: 1,
-      borderColor: isDarkMode ? '#2C3A3B' : '#f5f5f5',
-      backgroundColor: isDarkMode ? '#2C3A3B' : '#f5f5f5',
-      justifyContent: 'center',
-      alignItems: 'center',
+      borderColor: isDarkMode ? "#2C3A3B" : "#f5f5f5",
+      backgroundColor: isDarkMode ? "#2C3A3B" : "#f5f5f5",
+      justifyContent: "center",
+      alignItems: "center",
       flex: 1,
       marginHorizontal: 4,
     },
     buttonText: {
       fontSize: 13,
-      fontWeight: '600',
-      color: isDarkMode ? '#A0A0A0' : '#888',
+      fontWeight: "600",
+      color: isDarkMode ? "#A0A0A0" : "#888",
     },
     addFlightButton: {
-      backgroundColor: isDarkMode ? 'rgba(46, 204, 113, 0.3)' : 'rgba(46, 204, 113, 0.15)',
-      borderColor: isDarkMode ? 'rgba(46, 204, 113, 0.3)' : 'rgba(46, 204, 113, 0.15)',
+      backgroundColor: isDarkMode
+        ? "rgba(46, 204, 113, 0.3)"
+        : "rgba(46, 204, 113, 0.15)",
+      borderColor: isDarkMode
+        ? "rgba(46, 204, 113, 0.3)"
+        : "rgba(46, 204, 113, 0.15)",
     },
     addFlightButtonText: {
-      color: isDarkMode ? '#66BB6A' : '#27ae60',
-      fontWeight: '600',
+      color: isDarkMode ? "#66BB6A" : "#27ae60",
+      fontWeight: "600",
       fontSize: 13,
     },
     searchButton: {
-      backgroundColor: isDarkMode ? 'rgba(52, 152, 219, 0.3)' : 'rgba(52, 152, 219, 0.15)',
-      borderColor: isDarkMode ? 'rgba(52, 152, 219, 0.3)' : 'rgba(52, 152, 219, 0.15)',
+      backgroundColor: isDarkMode
+        ? "rgba(52, 152, 219, 0.3)"
+        : "rgba(52, 152, 219, 0.15)",
+      borderColor: isDarkMode
+        ? "rgba(52, 152, 219, 0.3)"
+        : "rgba(52, 152, 219, 0.15)",
     },
     searchButtonText: {
-      color: isDarkMode ? '#4A90E2' : '#2980b9',
-      fontWeight: '600',
+      color: isDarkMode ? "#4A90E2" : "#2980b9",
+      fontWeight: "600",
       fontSize: 13,
     },
     disabledButton: {
-      backgroundColor: isDarkMode ? '#2A2A2A' : '#fafafa',
-      borderColor: isDarkMode ? '#4A5657' : '#bbb',
+      backgroundColor: isDarkMode ? "#2A2A2A" : "#fafafa",
+      borderColor: isDarkMode ? "#4A5657" : "#bbb",
     },
     disabledButtonText: {
-      color: isDarkMode ? '#4A5657' : '#bbb',
+      color: isDarkMode ? "#4A5657" : "#bbb",
     },
     rainButton: {
       borderRadius: 20,
       width: 40,
       height: 40,
-      alignItems: 'center',
-      justifyContent: 'center',
-      overflow: 'hidden',
+      alignItems: "center",
+      justifyContent: "center",
+      overflow: "hidden",
       marginLeft: 8,
     },
-  });  
+  });
 
   return (
     <View style={styles.card}>
@@ -353,14 +379,14 @@ const FlightCard: React.FC<FlightCardProps> = ({
           <View style={styles.directionBadge}>
             <Text style={styles.directionText}>{flightDirection}</Text>
           </View>
-          <Text style={styles.flightType}>{item.flightType}</Text>
+          <Text style={styles.flight_type}>{item.flight_type}</Text>
         </View>
       </View>
 
       <View style={styles.routeContainer}>
         <View style={styles.locationInfo}>
           <Text style={styles.locationCode}>{item.origin}</Text>
-          <Text style={styles.country}>{item.originCountry}</Text>
+          <Text style={styles.country}>{item.origin_country}</Text>
         </View>
         <View style={styles.flightPath}>
           <View style={styles.line}></View>
@@ -371,7 +397,7 @@ const FlightCard: React.FC<FlightCardProps> = ({
         </View>
         <View style={styles.locationInfo}>
           <Text style={styles.locationCode}>{item.destination}</Text>
-          <Text style={styles.country}>{item.destinationCountry}</Text>
+          <Text style={styles.country}>{item.destination_country}</Text>
         </View>
       </View>
 
@@ -392,24 +418,35 @@ const FlightCard: React.FC<FlightCardProps> = ({
             <Text style={styles.priceLabel}>Price</Text>
             {showBaggageCostInfo ? (
               <>
-                <Text style={styles.price}>₹{item.price_inr.toLocaleString()}</Text>
-                {(baggageCost > 0 || (airlinePolicy?.extraCheckedOptions && airlinePolicy.extraCheckedOptions.length > 0)) && (
+                <Text style={styles.price}>
+                  ₹{item.price_inr.toLocaleString()}
+                </Text>
+                {(baggageCost > 0 ||
+                  (airlinePolicy?.extraCheckedOptions &&
+                    airlinePolicy.extraCheckedOptions.length > 0)) && (
                   <Text style={styles.baggageCost}>
                     + ₹{baggageCost.toLocaleString()} ({displayWeight})
                   </Text>
                 )}
                 {baggageCost > 0 && (
-                  <Text style={styles.totalPrice}>Total: ₹{totalPrice.toLocaleString()}</Text>
+                  <Text style={styles.totalPrice}>
+                    Total: ₹{totalPrice.toLocaleString()}
+                  </Text>
                 )}
               </>
             ) : (
-              <Text style={styles.price}>₹{item.price_inr.toLocaleString()}</Text>
+              <Text style={styles.price}>
+                ₹{item.price_inr.toLocaleString()}
+              </Text>
             )}
           </View>
 
           {showRainInfo && (
             <TouchableOpacity
-              style={[styles.rainButton, { backgroundColor: getRainColor(item.rain_probability) }]}
+              style={[
+                styles.rainButton,
+                { backgroundColor: getRainColor(item.rain_probability) },
+              ]}
               onPress={handleRainPress}
               accessible={true}
               accessibilityLabel={`View rain information for ${item.destination}. Probability: ${item.rain_probability}%`}
@@ -442,7 +479,14 @@ const FlightCard: React.FC<FlightCardProps> = ({
             accessibilityHint="Opens luggage details modal"
             disabled={!onLuggagePolicyPress || !airlinePolicy}
           >
-            <Text style={[styles.buttonText, !airlinePolicy && styles.disabledButtonText]}>Luggage</Text>
+            <Text
+              style={[
+                styles.buttonText,
+                !airlinePolicy && styles.disabledButtonText,
+              ]}
+            >
+              Luggage
+            </Text>
           </TouchableOpacity>
 
           <TouchableOpacity
@@ -458,6 +502,5 @@ const FlightCard: React.FC<FlightCardProps> = ({
     </View>
   );
 };
-
 
 export default FlightCard;

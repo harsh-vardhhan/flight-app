@@ -1,20 +1,21 @@
-import React from 'react';
-import { View, Text, StyleSheet, useColorScheme } from 'react-native';
-import Svg, { Circle } from 'react-native-svg';
+import React from "react";
+import { View, Text, StyleSheet, useColorScheme } from "react-native";
+import Svg, { Circle } from "react-native-svg";
 
 interface RainProbabilityIndicatorProps {
   probability: number;
   size?: number;
 }
 
-
-
-const RainProbabilityIndicator = ({ probability, size = 40 }: RainProbabilityIndicatorProps) => {
+const RainProbabilityIndicator = ({
+  probability,
+  size = 40,
+}: RainProbabilityIndicatorProps) => {
   const colorScheme = useColorScheme();
-  const isDarkMode = colorScheme === 'dark';
+  const isDarkMode = colorScheme === "dark";
 
   if (probability === null || probability === undefined || probability <= 0) {
-     return null;
+    return null;
   }
 
   const strokeWidth = 3.5;
@@ -23,34 +24,34 @@ const RainProbabilityIndicator = ({ probability, size = 40 }: RainProbabilityInd
   const progress = Math.min(probability, 100) / 100;
   const strokeDashoffset = circumference * (1 - progress);
 
-  let color = isDarkMode ? '#4A90E2' : '#3498db';
+  let color = isDarkMode ? "#4A90E2" : "#3498db";
   if (probability < 25) {
-    color = isDarkMode ? '#66BB6A' : '#2ecc71';
+    color = isDarkMode ? "#66BB6A" : "#2ecc71";
   } else if (probability > 50) {
-    color = isDarkMode ? '#EF5350' : '#e74c3c';
+    color = isDarkMode ? "#EF5350" : "#e74c3c";
   }
 
   const styles = StyleSheet.create({
     indicatorContainer: {
-      alignItems: 'center',
-      justifyContent: 'center',
-      position: 'relative',
+      alignItems: "center",
+      justifyContent: "center",
+      position: "relative",
     },
     textOverlayContainer: {
-      position: 'absolute',
-      alignItems: 'center',
-      justifyContent: 'center',
-      pointerEvents: 'none',
+      position: "absolute",
+      alignItems: "center",
+      justifyContent: "center",
+      pointerEvents: "none",
     },
     probabilityText: {
       fontSize: 11,
-      fontWeight: 'bold',
+      fontWeight: "bold",
       lineHeight: 13,
     },
     label: {
       fontSize: 8,
-      color: isDarkMode ? '#A0A0A0' : '#667',
-      fontWeight: '500',
+      color: isDarkMode ? "#A0A0A0" : "#667",
+      fontWeight: "500",
       lineHeight: 10,
       marginTop: -1,
     },
@@ -64,7 +65,7 @@ const RainProbabilityIndicator = ({ probability, size = 40 }: RainProbabilityInd
           cy={size / 2}
           r={radius}
           strokeWidth={strokeWidth}
-          stroke={isDarkMode ? '#2C3A3B' : '#eef2f5'}
+          stroke={isDarkMode ? "#2C3A3B" : "#eef2f5"}
           fill="transparent"
         />
         <Circle
@@ -87,7 +88,5 @@ const RainProbabilityIndicator = ({ probability, size = 40 }: RainProbabilityInd
     </View>
   );
 };
-
-
 
 export default RainProbabilityIndicator;
