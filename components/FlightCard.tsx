@@ -12,7 +12,7 @@ import { enUS } from "date-fns/locale";
 import { AirlineLuggagePolicy } from "./LuggagePolicyModal";
 import { formatDate } from "../app/utils/formatDate";
 import { Flight } from "../app/reducers/flightListReducer";
-import { useTheme } from './../hooks/useTheme';
+import { useTheme } from "./../hooks/useTheme";
 
 type LuggagePolicyDatabase = {
   [airlineName: string]: AirlineLuggagePolicy;

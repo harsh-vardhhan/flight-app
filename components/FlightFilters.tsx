@@ -6,10 +6,9 @@ import {
   StyleSheet,
   Modal,
   FlatList,
-  useColorScheme,
 } from "react-native";
 import Ionicons from "@expo/vector-icons/Ionicons";
-import { useTheme } from './../hooks/useTheme';
+import { useTheme } from "./../hooks/useTheme";
 
 interface FlightFiltersProps {
   baggageOption: "all" | "free" | "included";
@@ -43,7 +42,7 @@ const FlightFilters: React.FC<FlightFiltersProps> = ({
     selectedDestination === "Ho Chi Minh City" ||
     selectedDestination === "Da Nang";
 
-  const { isDarkMode }= useTheme();
+  const { isDarkMode } = useTheme();
 
   const styles = StyleSheet.create({
     filtersContainer: {

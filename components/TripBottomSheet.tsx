@@ -10,7 +10,7 @@ import {
 } from "react-native";
 import FlightCard from "./FlightCard";
 import { Flight } from "../app/reducers/flightListReducer";
-import { useTheme } from './../hooks/useTheme';
+import { useTheme } from "./../hooks/useTheme";
 
 const { height: SCREEN_HEIGHT } = Dimensions.get("window");
 const MAX_TRANSLATE_Y = -SCREEN_HEIGHT + 10; // Near top of screen

@@ -10,8 +10,8 @@ import {
   TouchableOpacity,
   ScrollView,
 } from "react-native";
-import { precipitationData, months} from "@/app/utils/weatherData";
-import { useTheme } from './../hooks/useTheme';
+import { precipitationData, months } from "@/app/utils/weatherData";
+import { useTheme } from "./../hooks/useTheme";
 
 interface RainInfoBottomSheetProps {
   visible: boolean;
@@ -29,7 +29,6 @@ const RainInfoBottomSheet: React.FC<RainInfoBottomSheetProps> = ({
   date,
 }) => {
   const { isDarkMode } = useTheme();
-
 
   const getMaxRainDays = (): number => {
     let max = 0;

@@ -28,7 +28,7 @@ import {
   luggagePolicies,
   Flight,
 } from "../reducers/flightListReducer";
-import {useTheme} from '../../hooks/useTheme';
+import { useTheme } from "../../hooks/useTheme";
 
 // Utilities
 const getUniqueCities = () => {
