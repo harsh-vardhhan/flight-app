@@ -1,7 +1,8 @@
 import React from 'react';
-import { View, StyleSheet, useColorScheme } from 'react-native';
+import { View, StyleSheet } from 'react-native';
 import FlightFilters from './FlightFilters';
 import LocationSelector from './LocationSelector';
+import { useTheme } from './../hooks/useTheme';
 
 interface FilterTabsProps {
   uniqueCities: string[];
@@ -41,8 +42,7 @@ const FilterTabs: React.FC<FilterTabsProps> = ({
     ? [...new Set(routes.filter(r => r.origin === selectedOrigin).map(r => r.destination))]
     : [];
 
-  const colorScheme = useColorScheme();
-  const isDarkMode = colorScheme === 'dark';
+  const {isDarkMode} = useTheme()
 
   const styles = StyleSheet.create({
     filterContainer: {

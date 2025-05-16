@@ -8,9 +8,9 @@ import {
   Animated,
   PanResponder,
   Dimensions,
-  useColorScheme,
 } from "react-native";
 import Slider from "@react-native-community/slider";
+import { useTheme } from './../hooks/useTheme';
 
 type LuggageDetail = {
   weight: string;
@@ -52,8 +52,7 @@ const LuggagePolicyBottomSheet: React.FC<LuggagePolicyBottomSheetProps> = ({
   const [selectedWeightIndex, setSelectedWeightIndex] = useState(0);
   const [sliderValue, setSliderValue] = useState(0);
 
-  const colorScheme = useColorScheme();
-  const isDarkMode = colorScheme === "dark";
+  const { isDarkMode } = useTheme();
 
   // Animation values
   const translateY = useRef(new Animated.Value(SCREEN_HEIGHT)).current;
@@ -659,5 +658,5 @@ const LuggagePolicyBottomSheet: React.FC<LuggagePolicyBottomSheetProps> = ({
   );
 };
 
-export default LuggagePolicyBottomSheet;
+export default React.memo(LuggagePolicyBottomSheet);
 export type { LuggageDetail, CheckedBaggageTier, AirlineLuggagePolicy };

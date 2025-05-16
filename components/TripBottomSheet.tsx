@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef } from "react";
 import {
   View,
   Text,
@@ -7,10 +7,10 @@ import {
   Dimensions,
   Animated,
   PanResponder,
-  useColorScheme,
 } from "react-native";
 import FlightCard from "./FlightCard";
 import { Flight } from "../app/reducers/flightListReducer";
+import { useTheme } from './../hooks/useTheme';
 
 const { height: SCREEN_HEIGHT } = Dimensions.get("window");
 const MAX_TRANSLATE_Y = -SCREEN_HEIGHT + 10; // Near top of screen
@@ -35,8 +35,7 @@ const TripBottomSheet: React.FC<TripBottomSheetProps> = ({
   const bottomSheetVisible = outboundFlight !== null || returnFlight !== null;
   const isAnimatingRef = useRef(false);
 
-  const colorScheme = useColorScheme();
-  const isDarkMode = colorScheme === "dark";
+  const { isDarkMode } = useTheme();
 
   // Store the current position value
   const currentPositionRef = useRef(0);

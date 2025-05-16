@@ -5,7 +5,6 @@ import {
   TouchableOpacity,
   StyleSheet,
   Linking,
-  useColorScheme,
 } from "react-native";
 import RainProbabilityIndicator from "./RainProbabilityIndicator";
 import { format } from "date-fns";
@@ -13,6 +12,7 @@ import { enUS } from "date-fns/locale";
 import { AirlineLuggagePolicy } from "./LuggagePolicyModal";
 import { formatDate } from "../app/utils/formatDate";
 import { Flight } from "../app/reducers/flightListReducer";
+import { useTheme } from './../hooks/useTheme';
 
 type LuggagePolicyDatabase = {
   [airlineName: string]: AirlineLuggagePolicy;
@@ -43,8 +43,7 @@ const FlightCard: React.FC<FlightCardProps> = ({
   const showMealInfo = item.free_meal === true;
   const rainInfo = Math.trunc(item.rain_probability);
 
-  const colorScheme = useColorScheme();
-  const isDarkMode = colorScheme === "dark";
+  const { isDarkMode } = useTheme();
 
   const airlinePolicy = luggagePolicies[item.airline];
 

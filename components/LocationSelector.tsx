@@ -9,6 +9,7 @@ import {
   useColorScheme,
 } from "react-native";
 import Ionicons from "@expo/vector-icons/Ionicons";
+import { useTheme } from './../hooks/useTheme';
 
 interface LocationSelectorProps {
   uniqueCities: string[];
@@ -30,8 +31,7 @@ const LocationSelector: React.FC<LocationSelectorProps> = ({
   const [originModalVisible, setOriginModalVisible] = useState(false);
   const [destinationModalVisible, setDestinationModalVisible] = useState(false);
 
-  const colorScheme = useColorScheme();
-  const isDarkMode = colorScheme === "dark";
+  const { isDarkMode } = useTheme();
 
   const handleSwapLocations = () => {
     if (selectedOrigin && selectedDestination) {

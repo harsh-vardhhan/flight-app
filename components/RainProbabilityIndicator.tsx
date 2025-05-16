@@ -1,6 +1,7 @@
 import React from "react";
-import { View, Text, StyleSheet, useColorScheme } from "react-native";
+import { View, Text, StyleSheet } from "react-native";
 import Svg, { Circle } from "react-native-svg";
+import { useTheme } from './../hooks/useTheme';
 
 interface RainProbabilityIndicatorProps {
   probability: number;
@@ -11,8 +12,7 @@ const RainProbabilityIndicator = ({
   probability,
   size = 40,
 }: RainProbabilityIndicatorProps) => {
-  const colorScheme = useColorScheme();
-  const isDarkMode = colorScheme === "dark";
+  const { isDarkMode } = useTheme();
 
   if (probability === null || probability === undefined || probability <= 0) {
     return null;

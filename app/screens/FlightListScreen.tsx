@@ -11,7 +11,6 @@ import {
   ActivityIndicator,
   StyleSheet,
   TouchableOpacity,
-  useColorScheme,
 } from "react-native";
 import { FlashList } from "@shopify/flash-list";
 import { fetchFlights } from "../utils/fetchFlights";
@@ -29,6 +28,7 @@ import {
   luggagePolicies,
   Flight,
 } from "../reducers/flightListReducer";
+import {useTheme} from '../../hooks/useTheme';
 
 // Utilities
 const getUniqueCities = () => {
@@ -42,8 +42,7 @@ const FlightListScreen = () => {
   const flashListRef = useRef<FlashList<Flight>>(null);
 
   // Get device color scheme
-  const colorScheme = useColorScheme();
-  const isDarkMode = colorScheme === "dark";
+  const { isDarkMode } = useTheme();
 
   // Calculate trip price and duration
   const { price, duration } = useMemo(() => {
