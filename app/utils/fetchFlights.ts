@@ -1,4 +1,4 @@
-const BASE_URL = 'https://flight-price-api-hg5r.onrender.com/api/flights';
+const BASE_URL = 'https://rupeetravel-api-production.up.railway.app/api/flights';
 
 export interface Flight {
   uuid: string;
