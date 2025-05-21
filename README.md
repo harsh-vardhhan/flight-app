@@ -13,4 +13,4 @@
 
 ## Backend
 
-[Rust REST API](https://github.com/harsh-vardhhan/flight-price-api)
+[Rust REST API](https://github.com/harsh-vardhhan/rupeetravel-api)
