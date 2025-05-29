@@ -13,7 +13,6 @@ import {
   TouchableOpacity,
 } from "react-native";
 import { FlashList } from "@shopify/flash-list";
-import { fetchFlights } from "../utils/fetchFlights";
 import { routes } from "../utils/routes";
 import FlightCard from "../../components/FlightCard";
 import FilterTabs from "../../components/FilterTabs";
@@ -29,6 +28,7 @@ import {
   Flight,
 } from "../reducers/flightListReducer";
 import { useTheme } from "../../hooks/useTheme";
+import { useFlightData } from "../../hooks/useFlightData"; // Import the custom hook
 
 // Utilities
 const getUniqueCities = () => {
@@ -43,6 +43,13 @@ const FlightListScreen = () => {
 
   // Get device color scheme
   const { isDarkMode } = useTheme();
+
+  // Use the custom hook for flight data management
+  const { loadInitialFlights, resetAndReload, handleEndReached } = useFlightData({
+    state,
+    dispatch,
+    flashListRef,
+  });
 
   // Calculate trip price and duration
   const { price, duration } = useMemo(() => {
@@ -66,7 +73,7 @@ const FlightListScreen = () => {
   // Load initial flights
   useEffect(() => {
     loadInitialFlights();
-  }, []);
+  }, [loadInitialFlights]);
 
   // Reset and reload flights when filters change
   useEffect(() => {
@@ -80,96 +87,8 @@ const FlightListScreen = () => {
     state.drySeason,
     state.priceFilter,
     state.sortByDate,
+    resetAndReload,
   ]);
-
-  const loadInitialFlights = async () => {
-    try {
-      dispatch({ type: "SET_LOADING", payload: true });
-      await loadFlightsWithPage(1);
-    } catch (error) {
-      console.error("Error loading initial flights:", error);
-    } finally {
-      dispatch({ type: "SET_LOADING", payload: false });
-    }
-  };
-
-  const resetAndReload = async () => {
-    dispatch({ type: "RESET_LIST" });
-    if (flashListRef.current) {
-      flashListRef.current.scrollToOffset({ offset: 0, animated: false });
-    }
-    await loadFlightsWithPage(1);
-  };
-
-  const loadFlightsWithPage = useCallback(
-    async (page: number) => {
-      try {
-        if (page > 1) {
-          dispatch({ type: "SET_LOADING_MORE", payload: true });
-        } else {
-          dispatch({ type: "SET_LOADING", payload: true });
-        }
-
-        const params: Record<string, string | number> = { page };
-        if (state.selectedOrigin) params.origin = state.selectedOrigin;
-        if (state.selectedDestination)
-          params.destination = state.selectedDestination;
-        if (state.drySeason) params.max_rain = 20;
-        if (state.priceFilter) params.max_price = 10000;
-        if (state.sortByDate) params.sort_by = "date";
-        if (state.baggageOption === "free") {
-          params.airline = "Vietnam Airlines,Air India";
-        } else if (state.baggageOption === "included") {
-          params.airline = "VietJet Air";
-        }
-
-        const response = await fetchFlights(params);
-
-        const totalCount = response.total_items;
-        dispatch({ type: "SET_TOTAL_FLIGHTS", payload: totalCount });
-
-        const flights = response.data;
-        if (flights.length === 0) {
-          dispatch({ type: "SET_HAS_MORE", payload: false });
-          dispatch({ type: "SET_LOADING_MORE", payload: false });
-          if (page === 1) dispatch({ type: "SET_FLIGHTS", payload: [] });
-          return;
-        }
-
-        if (page === 1) {
-          dispatch({ type: "SET_FLIGHTS", payload: flights });
-        } else {
-          dispatch({ type: "APPEND_FLIGHTS", payload: flights });
-        }
-
-        dispatch({ type: "SET_PAGE", payload: page });
-        dispatch({
-          type: "SET_HAS_MORE",
-          payload: page < response.total_pages,
-        });
-      } catch (error) {
-        console.error("Error loading flights:", error);
-        dispatch({ type: "SET_HAS_MORE", payload: false });
-      } finally {
-        dispatch({ type: "SET_LOADING_MORE", payload: false });
-        dispatch({ type: "SET_LOADING", payload: false });
-      }
-    },
-    [
-      state.selectedOrigin,
-      state.selectedDestination,
-      state.baggageOption,
-      state.drySeason,
-      state.priceFilter,
-      state.sortByDate,
-    ],
-  );
-
-  const handleEndReached = useCallback(() => {
-    if (!state.loadingMore && state.hasMore && !state.loading) {
-      loadFlightsWithPage(state.page + 1);
-    }
-  }, [state.loadingMore, state.hasMore, state.page, state.loading]);
 
   const handleSelectFlight = useCallback(
     (flight: Flight, direction: "Outbound" | "Return") => {
@@ -234,7 +153,7 @@ const FlightListScreen = () => {
     ],
   );
 
-  // Theme-based styles
+  // Theme-based styles (same as before)
   const styles = StyleSheet.create({
     container: {
       flex: 1,
