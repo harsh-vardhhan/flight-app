@@ -1,26 +1,36 @@
-import { useCallback } from 'react';
-import { FlashList } from '@shopify/flash-list';
-import { fetchFlights } from '../app/utils/fetchFlights';
-import { Flight } from '../app/reducers/flightListReducer';
+import { useCallback, useReducer, useRef, useEffect, useMemo } from "react";
+import { FlashList } from "@shopify/flash-list";
+import { parseISO, differenceInCalendarDays } from "date-fns";
+import { fetchFlights } from "../app/utils/fetchFlights";
+import {
+  flightListReducer,
+  initialState,
+  Flight,
+} from "../app/reducers/flightListReducer";
 
-interface UseFlightDataProps {
-  state: {
-    selectedOrigin: string | null;
-    selectedDestination: string | null;
-    baggageOption: string;
-    drySeason: boolean;
-    priceFilter: boolean;
-    sortByDate: boolean;
-    loadingMore: boolean;
-    hasMore: boolean;
-    loading: boolean;
-    page: number;
-  };
-  dispatch: React.Dispatch<any>;
-  flashListRef: React.RefObject<FlashList<Flight> | null>;
-}
+export const useFlightData = () => {
+  const [state, dispatch] = useReducer(flightListReducer, initialState);
+  const flashListRef = useRef<FlashList<Flight> | null>(null);
 
-export const useFlightData = ({ state, dispatch, flashListRef }: UseFlightDataProps) => {
+  // Calculate trip price and duration
+  const { price, duration } = useMemo(() => {
+    const outbound = state.trip.outbound;
+    const returnFlight = state.trip.return;
+
+    const outboundPrice = outbound?.price_inr || 0;
+    const returnPrice = returnFlight?.price_inr || 0;
+    const total = outboundPrice + returnPrice;
+
+    let duration: number | null = null;
+    if (outbound?.date && returnFlight?.date) {
+      const startDate = parseISO(outbound.date);
+      const endDate = parseISO(returnFlight.date);
+      duration = differenceInCalendarDays(endDate, startDate);
+    }
+
+    return { price: total, duration };
+  }, [state.trip.outbound, state.trip.return]);
+
   const loadFlightsWithPage = useCallback(
     async (page: number) => {
       try {
@@ -82,7 +92,6 @@ export const useFlightData = ({ state, dispatch, flashListRef }: UseFlightDataPr
       state.drySeason,
       state.priceFilter,
       state.sortByDate,
-      dispatch,
     ],
   );
 
@@ -95,7 +104,7 @@ export const useFlightData = ({ state, dispatch, flashListRef }: UseFlightDataPr
     } finally {
       dispatch({ type: "SET_LOADING", payload: false });
     }
-  }, [loadFlightsWithPage, dispatch]);
+  }, [loadFlightsWithPage]);
 
   const resetAndReload = useCallback(async () => {
     dispatch({ type: "RESET_LIST" });
@@ -103,18 +112,73 @@ export const useFlightData = ({ state, dispatch, flashListRef }: UseFlightDataPr
       flashListRef.current.scrollToOffset({ offset: 0, animated: false });
     }
     await loadFlightsWithPage(1);
-  }, [dispatch, flashListRef, loadFlightsWithPage]);
+  }, [loadFlightsWithPage]);
 
   const handleEndReached = useCallback(() => {
     if (!state.loadingMore && state.hasMore && !state.loading) {
       loadFlightsWithPage(state.page + 1);
     }
-  }, [state.loadingMore, state.hasMore, state.page, state.loading, loadFlightsWithPage]);
+  }, [
+    state.loadingMore,
+    state.hasMore,
+    state.page,
+    state.loading,
+    loadFlightsWithPage,
+  ]);
+
+  // Load initial flights on hook initialization
+  useEffect(() => {
+    loadInitialFlights();
+  }, [loadInitialFlights]);
+
+  // Reset and reload flights when filters change
+  useEffect(() => {
+    if (!state.loading) {
+      resetAndReload();
+    }
+  }, [
+    state.selectedOrigin,
+    state.selectedDestination,
+    state.baggageOption,
+    state.drySeason,
+    state.priceFilter,
+    state.sortByDate,
+    resetAndReload,
+  ]);
+
+  // Action creators for dispatch
+  const actions = {
+    setOrigin: (origin: string | null) =>
+      dispatch({ type: "SET_ORIGIN", payload: origin }),
+    setDestination: (destination: string | null) =>
+      dispatch({ type: "SET_DESTINATION", payload: destination }),
+    setBaggageOption: (option: "all" | "free" | "included") =>
+      dispatch({ type: "SET_BAGGAGE_OPTION", payload: option }),
+    setBaggageWeight: (weight: string) =>
+      dispatch({ type: "SET_BAGGAGE_WEIGHT", payload: weight }),
+    setDrySeason: (value: boolean) =>
+      dispatch({ type: "SET_DRY_SEASON", payload: value }),
+    setPriceFilter: (value: boolean) =>
+      dispatch({ type: "SET_PRICE_FILTER", payload: value }),
+    toggleSortByDate: () => dispatch({ type: "TOGGLE_SORT_BY_DATE" }),
+    selectFlight: (flight: Flight, direction: "Outbound" | "Return") =>
+      dispatch({ type: "SELECT_FLIGHT", payload: { flight, direction } }),
+    removeFlight: (direction: "Outbound" | "Return") =>
+      dispatch({ type: "REMOVE_FLIGHT", payload: direction }),
+    openLuggagePolicy: (airline: string) =>
+      dispatch({ type: "OPEN_LUGGAGE_POLICY", payload: airline }),
+    closeLuggagePolicy: () => dispatch({ type: "CLOSE_LUGGAGE_POLICY" }),
+    openRainInfo: (flight: Flight) =>
+      dispatch({ type: "OPEN_RAIN_INFO", payload: flight }),
+    closeRainInfo: () => dispatch({ type: "CLOSE_RAIN_INFO" }),
+  };
 
   return {
-    loadInitialFlights,
-    resetAndReload,
+    state,
+    actions,
+    flashListRef,
     handleEndReached,
-    loadFlightsWithPage,
+    price,
+    duration,
   };
 };

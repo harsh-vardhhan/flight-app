@@ -1,10 +1,4 @@
-import React, {
-  useEffect,
-  useReducer,
-  useCallback,
-  useMemo,
-  useRef,
-} from "react";
+import React, { useCallback } from "react";
 import {
   View,
   Text,
@@ -19,16 +13,10 @@ import FilterTabs from "../../components/FilterTabs";
 import TripBottomSheet from "../../components/TripBottomSheet";
 import LuggagePolicyBottomSheet from "../../components/LuggagePolicyModal";
 import RainInfoBottomSheet from "../../components/RainInfoBottomSheet";
-import { parseISO, differenceInCalendarDays } from "date-fns";
 import Ionicons from "@expo/vector-icons/Ionicons";
-import {
-  flightListReducer,
-  initialState,
-  luggagePolicies,
-  Flight,
-} from "../reducers/flightListReducer";
+import { luggagePolicies, Flight } from "../reducers/flightListReducer";
 import { useTheme } from "../../hooks/useTheme";
-import { useFlightData } from "../../hooks/useFlightData"; // Import the custom hook
+import { useFlightData } from "../../hooks/useFlightData";
 
 // Utilities
 const getUniqueCities = () => {
@@ -37,100 +25,32 @@ const getUniqueCities = () => {
 };
 
 const FlightListScreen = () => {
-  const [state, dispatch] = useReducer(flightListReducer, initialState);
   const uniqueCities = getUniqueCities();
-  const flashListRef = useRef<FlashList<Flight>>(null);
-
-  // Get device color scheme
   const { isDarkMode } = useTheme();
-
-  // Use the custom hook for flight data management
-  const { loadInitialFlights, resetAndReload, handleEndReached } = useFlightData({
-    state,
-    dispatch,
-    flashListRef,
-  });
-
-  // Calculate trip price and duration
-  const { price, duration } = useMemo(() => {
-    const outbound = state.trip.outbound;
-    const returnFlight = state.trip.return;
-
-    const outboundPrice = outbound?.price_inr || 0;
-    const returnPrice = returnFlight?.price_inr || 0;
-    const total = outboundPrice + returnPrice;
-
-    let duration: number | null = null;
-    if (outbound?.date && returnFlight?.date) {
-      const startDate = parseISO(outbound.date);
-      const endDate = parseISO(returnFlight.date);
-      duration = differenceInCalendarDays(endDate, startDate);
-    }
-
-    return { price: total, duration };
-  }, [state.trip.outbound, state.trip.return]);
-
-  // Load initial flights
-  useEffect(() => {
-    loadInitialFlights();
-  }, [loadInitialFlights]);
-
-  // Reset and reload flights when filters change
-  useEffect(() => {
-    if (!state.loading) {
-      resetAndReload();
-    }
-  }, [
-    state.selectedOrigin,
-    state.selectedDestination,
-    state.baggageOption,
-    state.drySeason,
-    state.priceFilter,
-    state.sortByDate,
-    resetAndReload,
-  ]);
+  const { state, actions, flashListRef, handleEndReached, price, duration } =
+    useFlightData();
 
   const handleSelectFlight = useCallback(
     (flight: Flight, direction: "Outbound" | "Return") => {
-      dispatch({
-        type: "SELECT_FLIGHT",
-        payload: { flight, direction },
-      });
+      actions.selectFlight(flight, direction);
     },
-    [],
+    [actions],
   );
 
-  const handleRemoveFlight = useCallback((direction: "Outbound" | "Return") => {
-    dispatch({ type: "REMOVE_FLIGHT", payload: direction });
-  }, []);
-
-  const handleOpenLuggagePolicy = useCallback((airline: string) => {
-    if (luggagePolicies[airline]) {
-      dispatch({ type: "OPEN_LUGGAGE_POLICY", payload: airline });
-    } else {
-      console.warn(`Luggage policy not found for airline: ${airline}`);
-    }
-  }, []);
-
-  const handleCloseLuggagePolicy = useCallback(() => {
-    dispatch({ type: "CLOSE_LUGGAGE_POLICY" });
-  }, []);
+  const handleOpenLuggagePolicy = useCallback(
+    (airline: string) => {
+      if (luggagePolicies[airline]) {
+        actions.openLuggagePolicy(airline);
+      } else {
+        console.warn(`Luggage policy not found for airline: ${airline}`);
+      }
+    },
+    [actions],
+  );
 
   const getLuggageData = useCallback(() => {
     return luggagePolicies[state.selectedAirline] || null;
   }, [state.selectedAirline]);
-
-  const handleOpenRainInfo = useCallback((flight: Flight) => {
-    dispatch({ type: "OPEN_RAIN_INFO", payload: flight });
-  }, []);
-
-  const handleCloseRainInfo = useCallback(() => {
-    dispatch({ type: "CLOSE_RAIN_INFO" });
-  }, []);
-
-  const handleToggleSort = useCallback(() => {
-    dispatch({ type: "TOGGLE_SORT_BY_DATE" });
-  }, []);
 
   const renderItem = useCallback(
     ({ item }: { item: Flight }) => (
@@ -140,7 +60,7 @@ const FlightListScreen = () => {
         standardBaggageWeight={state.standardBaggageWeight}
         onSelectFlight={handleSelectFlight}
         onLuggagePolicyPress={handleOpenLuggagePolicy}
-        onRainInfoPress={handleOpenRainInfo}
+        onRainInfoPress={actions.openRainInfo}
         luggagePolicies={luggagePolicies}
       />
     ),
@@ -149,11 +69,11 @@ const FlightListScreen = () => {
       state.standardBaggageWeight,
       handleSelectFlight,
       handleOpenLuggagePolicy,
-      handleOpenRainInfo,
+      actions.openRainInfo,
     ],
   );
 
-  // Theme-based styles (same as before)
+  // Theme-based styles
   const styles = StyleSheet.create({
     container: {
       flex: 1,
@@ -292,24 +212,12 @@ const FlightListScreen = () => {
         drySeason={state.drySeason}
         priceFilter={state.priceFilter}
         routes={routes}
-        onOriginSelect={(origin) =>
-          dispatch({ type: "SET_ORIGIN", payload: origin })
-        }
-        onDestinationSelect={(destination) =>
-          dispatch({ type: "SET_DESTINATION", payload: destination })
-        }
-        onBaggageOptionChange={(option) =>
-          dispatch({ type: "SET_BAGGAGE_OPTION", payload: option })
-        }
-        onBaggageWeightChange={(weight) =>
-          dispatch({ type: "SET_BAGGAGE_WEIGHT", payload: weight })
-        }
-        onDrySeasonToggle={(value) =>
-          dispatch({ type: "SET_DRY_SEASON", payload: value })
-        }
-        onPriceFilterToggle={(value) =>
-          dispatch({ type: "SET_PRICE_FILTER", payload: value })
-        }
+        onOriginSelect={actions.setOrigin}
+        onDestinationSelect={actions.setDestination}
+        onBaggageOptionChange={actions.setBaggageOption}
+        onBaggageWeightChange={actions.setBaggageWeight}
+        onDrySeasonToggle={actions.setDrySeason}
+        onPriceFilterToggle={actions.setPriceFilter}
       />
 
       <View style={styles.totalCountContainer}>
@@ -321,7 +229,7 @@ const FlightListScreen = () => {
             styles.sortButton,
             state.sortByDate && styles.sortButtonSelected,
           ]}
-          onPress={handleToggleSort}
+          onPress={actions.toggleSortByDate}
         >
           <Ionicons
             name="calendar-outline"
@@ -346,6 +254,7 @@ const FlightListScreen = () => {
           </Text>
         </TouchableOpacity>
       </View>
+
       <FlashList
         ref={flashListRef}
         data={state.flights}
@@ -373,14 +282,14 @@ const FlightListScreen = () => {
           returnFlight={state.trip.return}
           price={price}
           duration={duration}
-          onRemoveFlight={handleRemoveFlight}
+          onRemoveFlight={actions.removeFlight}
         />
       )}
 
       {state.luggagePolicyVisible && (
         <LuggagePolicyBottomSheet
           visible={state.luggagePolicyVisible}
-          onClose={handleCloseLuggagePolicy}
+          onClose={actions.closeLuggagePolicy}
           airline={state.selectedAirline}
           luggagePolicy={getLuggageData()}
         />
@@ -389,7 +298,7 @@ const FlightListScreen = () => {
       {state.selectedFlightForRainInfo && (
         <RainInfoBottomSheet
           visible={state.rainInfoVisible}
-          onClose={handleCloseRainInfo}
+          onClose={actions.closeRainInfo}
           destination={state.selectedFlightForRainInfo.destination}
           date={state.selectedFlightForRainInfo.date}
           rain_probability={state.selectedFlightForRainInfo.rain_probability}
