@@ -64,10 +64,8 @@ const RainInfoBottomSheet: React.FC<RainInfoBottomSheetProps> = ({
     null,
   );
 
-  // All available destinations
   const destinations = useMemo(() => Object.keys(precipitationData), []);
 
-  // --- useMemo hooks for derived data ---
   const closestDestination = useMemo(() => {
     const destinations = Object.keys(precipitationData);
     if (destinations.includes(destination)) return destination;
