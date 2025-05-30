@@ -37,10 +37,8 @@ const TripBottomSheet: React.FC<TripBottomSheetProps> = ({
 
   const { isDarkMode } = useTheme();
 
-  // Store the current position value
   const currentPositionRef = useRef(0);
 
-  // Add listener to keep track of current position value
   useEffect(() => {
     const id = translateY.addListener(({ value }) => {
       currentPositionRef.current = value;
@@ -51,10 +49,8 @@ const TripBottomSheet: React.FC<TripBottomSheetProps> = ({
     };
   }, []);
 
-  // Effect to handle visibility changes
   useEffect(() => {
     if (bottomSheetVisible) {
-      // When flights are selected, show the bottom sheet with animation
       isAnimatingRef.current = true;
       Animated.spring(translateY, {
         toValue: MIN_TRANSLATE_Y,
@@ -65,7 +61,6 @@ const TripBottomSheet: React.FC<TripBottomSheetProps> = ({
         isAnimatingRef.current = false;
       });
     } else {
-      // When no flights are selected, hide the bottom sheet
       isAnimatingRef.current = true;
       Animated.spring(translateY, {
         toValue: 0,
@@ -78,12 +73,10 @@ const TripBottomSheet: React.FC<TripBottomSheetProps> = ({
     }
   }, [bottomSheetVisible]);
 
-  // Create PanResponder for gesture handling
   const panResponder = useRef(
     PanResponder.create({
-      onStartShouldSetPanResponder: () => !isAnimatingRef.current, // Don't handle when animating
+      onStartShouldSetPanResponder: () => !isAnimatingRef.current,
       onMoveShouldSetPanResponder: (_, gestureState) => {
-        // Only respond to deliberate vertical movements and not when animating
         return (
           !isAnimatingRef.current &&
           Math.abs(gestureState.dy) > 5 &&
@@ -91,7 +84,6 @@ const TripBottomSheet: React.FC<TripBottomSheetProps> = ({
         );
       },
       onPanResponderGrant: () => {
-        // Save current position and prepare for movement
         translateY.setOffset(currentPositionRef.current);
         translateY.setValue(0);
       },
@@ -114,13 +106,11 @@ const TripBottomSheet: React.FC<TripBottomSheetProps> = ({
         },
       }),
       onPanResponderRelease: (_, gestureState) => {
-        // Reset offset
         translateY.flattenOffset();
         const velocity = gestureState.vy;
 
         isAnimatingRef.current = true;
-
-        // Snap based on velocity and position
+        
         if (velocity < -0.5) {
           // Fast upward swipe - expand fully
           Animated.spring(translateY, {
