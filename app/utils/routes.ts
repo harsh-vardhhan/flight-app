@@ -47,40 +47,4 @@ export const routes = [
     origin_country: "Vietnam",
     destination_country: "India",
   },
-  {
-    origin: "Ahmedabad",
-    destination: "Hanoi",
-    origin_country: "India",
-    destination_country: "Vietnam",
-  },
-  {
-    origin: "Hanoi",
-    destination: "Ahmedabad",
-    origin_country: "Vietnam",
-    destination_country: "India",
-  },
-  {
-    origin: "Ahmedabad",
-    destination: "Ho Chi Minh City",
-    origin_country: "India",
-    destination_country: "Vietnam",
-  },
-  {
-    origin: "Ho Chi Minh City",
-    destination: "Ahmedabad",
-    origin_country: "Vietnam",
-    destination_country: "India",
-  },
-  {
-    origin: "Ahmedabad",
-    destination: "Da Nang",
-    origin_country: "India",
-    destination_country: "Vietnam",
-  },
-  {
-    origin: "Da Nang",
-    destination: "Ahmedabad",
-    origin_country: "Vietnam",
-    destination_country: "India",
-  },
 ];
