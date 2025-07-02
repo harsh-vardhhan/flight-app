@@ -47,4 +47,40 @@ export const routes = [
     origin_country: "Vietnam",
     destination_country: "India",
   },
+    {
+    origin: "Bangalore",
+    destination: "Ho Chi Minh City",
+    origin_country: "India",
+    destination_country: "Vietnam",
+  },
+  {
+    origin: "Ho Chi Minh City",
+    destination: "Bangalore",
+    origin_country: "Vietnam",
+    destination_country: "India",
+  },
+  {
+    origin: "Kolkata",
+    destination: "Hanoi",
+    origin_country: "India",
+    destination_country: "Vietnam",
+  },
+  {
+    origin: "Hanoi",
+    destination: "Kolkata",
+    origin_country: "Vietnam",
+    destinationCountry: "India",
+  },
+  {
+    origin: "Kolkata",
+    destination: "Ho Chi Minh City",
+    origin_country: "India",
+    destination_country: "Vietnam",
+  },
+  {
+    origin: "Ho Chi Minh City",
+    destination: "Kolkata",
+    origin_country: "Vietnam",
+    destination_country: "India",
+  },
 ];
