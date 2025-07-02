@@ -13,7 +13,8 @@
     },
     "android": {
       "package": "com.trakbit.flightpricetracker",
-      "versionCode": 28,
+      "compileSdkVersion": 35,
+      "targetSdkVersion": 35,
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
