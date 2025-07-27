@@ -97,12 +97,24 @@ const FlightCard: React.FC<FlightCardProps> = ({
     ? standardBaggageWeight
     : `${standardBaggageWeight}kg`;
 
-  const handleSearchPress = () => {
-    const searchQuery = `flights from ${item.origin} to ${item.destination} ${searchDate} one way`;
-    const googleSearchUrl = `https://www.google.com/search?q=${encodeURIComponent(searchQuery)}`;
-    Linking.openURL(googleSearchUrl).catch((err) =>
-      console.error("Couldn't load page", err),
-    );
+  const handleSearchPress = async () => {
+    const flightLink = item.link;
+
+    try {
+      // 1. Attempt to open the direct flight link
+      await Linking.openURL(flightLink);
+    } catch (error) {
+      // 2. If the direct link fails, fall back to a Google search
+      console.log("Direct link failed, falling back to Google search.");
+
+      const searchQuery = `flights from ${item.origin} to ${item.destination} ${searchDate} one way`;
+      const googleSearchUrl = `https://www.google.com/search?q=${encodeURIComponent(searchQuery)}`;
+
+      // It's good practice to also handle errors for the fallback URL
+      Linking.openURL(googleSearchUrl).catch((err) =>
+        console.error("Fallback Google search also failed:", err),
+      );
+    }
   };
 
   const handleLuggagePress = () => {
@@ -422,10 +434,10 @@ const FlightCard: React.FC<FlightCardProps> = ({
                 {(baggageCost > 0 ||
                   (airlinePolicy?.extraCheckedOptions &&
                     airlinePolicy.extraCheckedOptions.length > 0)) && (
-                  <Text style={styles.baggageCost}>
-                    + ₹{baggageCost.toLocaleString()} ({displayWeight})
-                  </Text>
-                )}
+                    <Text style={styles.baggageCost}>
+                      + ₹{baggageCost.toLocaleString()} ({displayWeight})
+                    </Text>
+                  )}
                 {baggageCost > 0 && (
                   <Text style={styles.totalPrice}>
                     Total: ₹{totalPrice.toLocaleString()}

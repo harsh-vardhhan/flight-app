@@ -50,7 +50,7 @@ export const useFlightData = () => {
         if (state.baggageOption === "free") {
           params.airline = "Vietnam Airlines,Air India";
         } else if (state.baggageOption === "included") {
-          params.airline = "VietJet Air";
+          params.airline = "Vietjet";
         }
 
         const response = await fetchFlights(params);

@@ -174,9 +174,9 @@ const LuggagePolicyBottomSheet: React.FC<LuggagePolicyBottomSheetProps> = ({
     }),
   ).current;
 
-  // Check if it's VietJet Air and has extraCheckedOptions
+  // Check if it's Vietjet and has extraCheckedOptions
   const isVietJetWithOptions =
-    airline === "VietJet Air" &&
+    airline === "Vietjet" &&
     luggagePolicy?.extraCheckedOptions &&
     luggagePolicy.extraCheckedOptions.length > 0;
 
@@ -542,7 +542,7 @@ const LuggagePolicyBottomSheet: React.FC<LuggagePolicyBottomSheetProps> = ({
             </View>
           </View>
 
-          {/* VietJet Air Range Slider for Extra Baggage */}
+          {/* Vietjet Range Slider for Extra Baggage */}
           {isVietJetWithOptions && (
             <View style={styles.rangeContainer}>
               <Text style={styles.extraBaggageTitle}>

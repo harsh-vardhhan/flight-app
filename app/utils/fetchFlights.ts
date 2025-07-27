@@ -6,14 +6,17 @@ export interface Flight {
   origin: string;
   destination: string;
   airline: string;
-  time: string;
   duration: string;
   flight_type: string;
   price_inr: number;
   origin_country: string;
   destination_country: string;
+  link: string;
   rain_probability: number;
-  free_meal?: boolean;
+  free_meal: boolean;
+  min_checked_luggage_price?: number | null;
+  min_checked_luggage_weight?: string | null;
+  total_with_min_luggage?: number | null;
 }
 
 export interface FlightResponse {
