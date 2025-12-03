@@ -1,4 +1,4 @@
-const BASE_URL = 'https://rupeetravel-api-production.up.railway.app/api/flights';
+const BASE_URL = 'https://emz8lgvgm2.execute-api.ap-south-1.amazonaws.com/api/flights';
 
 export interface Flight {
   uuid: string;
